@@ -15,29 +15,55 @@ namespace MachineLearningClient
 
         public static void Main(string[] args)
         {
+            int age = 25;
+            string gender = "man";
+            string nationality = "belg";
+            string transportationType = "car";
+            string locationType = "";
+            int stateCode = 0;
+
+            CallMachineLearningApi(age, gender, nationality, transportationType, locationType, stateCode);
+
+            Console.WriteLine("Done...");
+            Console.ReadLine();
+        }
+
+        private static void CallMachineLearningApi(int age, string gender, string nationality, string transportationType, string locationType, int stateCode)
+        {
             using (var client = new HttpClient())
             {
-
                 var scoreRequest = new
                 {
-
-                    Inputs = new Dictionary<string, StringTable>() {
+                    Inputs = new Dictionary<string, StringTable>()
+                    {
                         {
                             "input1",
                             new StringTable()
                             {
-                                ColumnNames = new[] {"leeftijd contact", "geslacht contact", "nationaliteit", "type vervoer", "type locatie", "statecode"},
-                                Values = new[,] {  { "0", "value", "value", "value", "value", "0" },  { "0", "value", "value", "value", "value", "0" },  }
+                                ColumnNames = new[]
+                                {
+                                    "leeftijd contact", "geslacht contact", "nationaliteit", "type vervoer", "type locatie",
+                                    "statecode"
+                                },
+                                Values = new[,]
+                                {
+                                    {age.ToString(), gender, nationality, transportationType,locationType, stateCode.ToString()},
+                                    //{"0", "value", "value", "value", "value", "0"},
+                                }
                             }
                         },
                     },
                     GlobalParameters = new Dictionary<string, string>()
                 };
 
-                const string apiKey = "WaubxJzn76CdLbGo0JKT0kG/UsDduN8+9plHG34pnOks+LkZRrsdtKvf3RAyItL8fGGbaR4TIivFXw95QWm3EA=="; // Replace this with the API key for the web service
+                const string
+                    apiKey =
+                        "WaubxJzn76CdLbGo0JKT0kG/UsDduN8+9plHG34pnOks+LkZRrsdtKvf3RAyItL8fGGbaR4TIivFXw95QWm3EA=="; // Replace this with the API key for the web service
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-                client.BaseAddress = new Uri("https://europewest.services.azureml.net/workspaces/a73a318c48744428bd5db2b30f7d604a/services/515622d69b9f4554b7b518ab33aa185d/execute?api-version=2.0&details=true");
+                client.BaseAddress =
+                    new Uri(
+                        "https://europewest.services.azureml.net/workspaces/a73a318c48744428bd5db2b30f7d604a/services/515622d69b9f4554b7b518ab33aa185d/execute?api-version=2.0&details=true");
 
                 HttpResponseMessage response = client.PostAsJsonAsync("", scoreRequest).Result;
 
@@ -57,9 +83,6 @@ namespace MachineLearningClient
                     Console.WriteLine(responseContent);
                 }
             }
-
-            Console.WriteLine("Done...");
-            Console.ReadLine();
         }
     }
 }
