@@ -22,13 +22,29 @@ namespace MachineLearningClient
             string locationType = "nederland";
             int stateCode = 0;
 
-            CallMachineLearningApi(age, gender, nationality, transportationType, locationType, stateCode);
+            var response = CallMachineLearningApi(age, gender, nationality, transportationType, locationType, stateCode);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine("Result: {0}", result);
+            }
+            else
+            {
+                Console.WriteLine($"The request failed with status code: {response.StatusCode}");
+
+                // Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
+                Console.WriteLine(response.Headers.ToString());
+
+                string responseContent = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(responseContent);
+            }
 
             Console.WriteLine("Done...");
             Console.ReadLine();
         }
 
-        private static void CallMachineLearningApi(int age, string gender, string nationality, string transportationType, string locationType, int stateCode)
+        private static HttpResponseMessage CallMachineLearningApi(int age, string gender, string nationality, string transportationType, string locationType, int stateCode)
         {
             using (var client = new HttpClient())
             {
@@ -66,21 +82,7 @@ namespace MachineLearningClient
 
                 HttpResponseMessage response = client.PostAsJsonAsync("", scoreRequest).Result;
 
-                if (response.IsSuccessStatusCode)
-                {
-                    string result = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine("Result: {0}", result);
-                }
-                else
-                {
-                    Console.WriteLine($"The request failed with status code: {response.StatusCode}");
-
-                    // Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
-                    Console.WriteLine(response.Headers.ToString());
-
-                    string responseContent = response.Content.ReadAsStringAsync().Result;
-                    Console.WriteLine(responseContent);
-                }
+                return response;
             }
         }
     }
