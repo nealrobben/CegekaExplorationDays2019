@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace MachineLearningClient
 {
@@ -22,12 +24,35 @@ namespace MachineLearningClient
             string locationType = "nederland";
             int stateCode = 0;
 
+            var probability = GetProbability(age, gender, nationality, transportationType, locationType, stateCode);
+
+            Console.WriteLine("Done...");
+            Console.ReadLine();
+        }
+
+        private static double? GetProbability(int age, string gender, string nationality, string transportationType,
+            string locationType, int stateCode)
+        {
             var response = CallMachineLearningApi(age, gender, nationality, transportationType, locationType, stateCode);
 
             if (response.IsSuccessStatusCode)
             {
-                string result = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine("Result: {0}", result);
+                string resultString = response.Content.ReadAsStringAsync().Result;
+                //Console.WriteLine("Result: {0}", resultString);
+
+                var resultObject = JsonConvert.DeserializeObject<RootObject>(resultString);
+
+                var probabilityString = (resultObject.Results.output1.value.Values[0])[7];
+
+                try
+                {
+                    var proabilityNumber = double.Parse(probabilityString, CultureInfo.InvariantCulture);
+                    return proabilityNumber;
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
             }
             else
             {
@@ -40,8 +65,7 @@ namespace MachineLearningClient
                 Console.WriteLine(responseContent);
             }
 
-            Console.WriteLine("Done...");
-            Console.ReadLine();
+            return null;
         }
 
         private static HttpResponseMessage CallMachineLearningApi(int age, string gender, string nationality, string transportationType, string locationType, int stateCode)
