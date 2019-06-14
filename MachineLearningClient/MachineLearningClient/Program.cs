@@ -18,8 +18,8 @@ namespace MachineLearningClient
             int age = 25;
             string gender = "man";
             string nationality = "belg";
-            string transportationType = "car";
-            string locationType = "";
+            string transportationType = "auto";
+            string locationType = "nederland";
             int stateCode = 0;
 
             CallMachineLearningApi(age, gender, nationality, transportationType, locationType, stateCode);
@@ -47,8 +47,7 @@ namespace MachineLearningClient
                                 },
                                 Values = new[,]
                                 {
-                                    {age.ToString(), gender, nationality, transportationType,locationType, stateCode.ToString()},
-                                    //{"0", "value", "value", "value", "value", "0"},
+                                    {age.ToString(), gender, nationality, transportationType,locationType, stateCode.ToString()}
                                 }
                             }
                         },
